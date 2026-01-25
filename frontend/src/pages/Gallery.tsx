@@ -140,21 +140,15 @@ const Gallery = () => {
           mode: 'cors'
         });
         
-        const data = await response.json();
-        
         if (!response.ok) {
-          console.error('Error fetching uploads:', data.error || 'Unknown error');
+          const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+          console.error('Error fetching uploads:', errorData.error || 'Unknown error');
           toast.error('Failed to fetch uploads');
           setImages([]);
           return;
         }
         
-        if (data.error) {
-          console.error('Error fetching uploads:', data.error);
-          toast.error('Failed to fetch uploads');
-          setImages([]);
-          return;
-        }
+        const data = await response.json();
         
         const sortedImages: Upload[] = (data.images || []).sort((a: Upload, b: Upload) =>
           new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
